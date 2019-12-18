@@ -7,9 +7,9 @@ import time
 
 def func_time(func):
     def ft():
-        s = time.clock()
+        s = time.time()
         func()
-        e = time.clock()
+        e = time.time()
         print('use time :', e - s)
     return ft()
 
