@@ -3,6 +3,10 @@ import numpy as np
 from ShowProcess import ShowProcess
 import glob
 import time
+import matplotlib.pyplot as plt
+
+
+plt.figure()
 
 
 def func_time(func):
@@ -51,6 +55,12 @@ def slice_out(im, num):
         part = sl * i
         crop_img = im[part:part + sl, 0:width]
         processed = process(crop_img)
+
+        plt.subplot2grid((4, 4), (i, 2), colspan=2, rowspan=1)
+        plt.axis('off')
+        plt.imshow(processed[0], cmap="gray")
+        plt.title(str(i) + ", " + str(processed[1]))
+
         sliced_imgs.append(processed[0])
         cont_cent.append(processed[1])
     return sliced_imgs, cont_cent
@@ -69,7 +79,7 @@ def repack(images):
 @func_time
 def main():
     img_in_root = 'test_data/image/'
-    img_out_root = 'test_data/output/'
+    img_out_root = 'test_data/pltoutput/'
     img_count = len(glob.glob(img_in_root + '*jpg'))
     process_bar = ShowProcess(img_count, 'OK!')
     no_slice = 4
@@ -77,9 +87,22 @@ def main():
     for x in range(img_count):
         img = cv2.imread(img_in_root + str(x).zfill(3) + '.jpg')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan=2)
+        plt.axis('off')
+        plt.imshow(img, cmap="gray")
+        plt.title("Gray")
+
         slices, cont_cent = slice_out(img, no_slice)
         img = repack(slices)
-        cv2.imwrite(img_out_root + str(x).zfill(3) + '.jpg', img)
+
+        plt.subplot2grid((4, 4), (2, 0), colspan=2, rowspan=2)
+        plt.axis('off')
+        plt.imshow(img, cmap='gray')
+        plt.title("Finish")
+
+        plt.savefig(img_out_root + str(x).zfill(3) + '.jpg')
+        # cv2.imwrite(img_out_root + str(x).zfill(3) + '.jpg', img)
         process_bar.show_process()
 
 
